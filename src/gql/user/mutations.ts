@@ -1,11 +1,21 @@
 import { gql } from 'urql/core';
 
 export const CreateUser = gql`
-  mutation createUser($email: String!, $name: String!, $role: roles_enum!) {
-    insert_users(objects: { name: $name, email: $email, role: $role }) {
-      returning {
-        id
+  mutation addUser(
+    $name: String!
+    $email: String!
+    $role: roles_enum!
+    $data: [user_details_insert_input!] = {}
+  ) {
+    user: insert_users_one(
+      object: {
+        name: $name
+        email: $email
+        role: $role
+        user_details: { data: $data }
       }
+    ) {
+      id
     }
   }
 `;

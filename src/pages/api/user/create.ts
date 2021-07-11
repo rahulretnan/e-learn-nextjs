@@ -1,21 +1,23 @@
 /* eslint-disable import/no-anonymous-default-export */
-import { get } from 'lodash';
+import { get, omit } from 'lodash';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { CreateUser } from '~/gql/user/mutations';
 import gqlClient from '~/helpers/graphql-client';
-import { CreateUser } from '../../../gql/user/mutations';
-import { admin } from '../firebase/admin';
+import { admin } from '~/services/firebase/admin';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req?.method;
   const variables = req?.body;
+  const details = omit(variables, ['name', 'email', 'role', 'password']);
   if (method === 'POST') {
     try {
       const data = await gqlClient.request(CreateUser, {
         name: variables?.name,
         email: variables?.email,
         role: variables?.role,
+        data: details,
       });
-      const userId = get(data, 'insert_users.returning.0.id');
+      const userId = get(data, 'user.id');
 
       await admin.auth().createUser({
         uid: userId,
@@ -31,7 +33,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       });
       return res.status(200).json({ id: userId });
     } catch (error) {
-      return res.status(409).json({ error });
+      return res.status(409).send({ error });
     }
   } else {
     return res.status(405).statusMessage;

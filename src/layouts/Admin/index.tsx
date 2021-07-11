@@ -1,16 +1,18 @@
-import { TeamOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Layout, Menu } from 'antd';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { TChildrenProps } from '~/shared/types';
+import { useAuth } from '~/hooks/useAuth';
+import { TProps } from '~/shared/types';
 
-const AdminLayout = ({ children }: TChildrenProps) => {
+const AdminLayout = ({ children }: TProps<any>) => {
   const router = useRouter();
+  const { name, logout } = useAuth();
   const { Content, Footer, Sider } = Layout;
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider>
-        <div className="logo">
+        <div className="flex justify-center py-4">
           <Avatar
             size={64}
             style={{ lineHeight: '58px' }}
@@ -18,7 +20,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
           />
         </div>
         <div className="text-white text-center mb-2">
-          {/* <strong>{auth.user.name}</strong> */}
+          <strong>{name}</strong>
         </div>
         <Menu defaultActiveFirst theme="dark" mode="inline">
           <Menu.Item
@@ -34,7 +36,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="u1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/teacher');
+              router.push('/admin/teachers');
             }}
           >
             Teachers
@@ -43,7 +45,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="h1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/student');
+              router.push('/admin/students');
             }}
           >
             Students
@@ -52,7 +54,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="c1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/parent');
+              router.push('/admin/parents');
             }}
           >
             Parents
@@ -61,7 +63,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="dd1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/department');
+              router.push('/admin/departments');
             }}
           >
             Departments
@@ -70,7 +72,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="cc1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/course');
+              router.push('/admin/courses');
             }}
           >
             Courses
@@ -79,7 +81,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="ss1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/semester');
+              router.push('/admin/semesters');
             }}
           >
             Semester
@@ -89,7 +91,7 @@ const AdminLayout = ({ children }: TChildrenProps) => {
             key="csss1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/admin/subject');
+              router.push('/admin/subjects');
             }}
           >
             Subjects
@@ -97,10 +99,11 @@ const AdminLayout = ({ children }: TChildrenProps) => {
 
           <Menu.Item
             key="signout"
-            // icon={<LogoutOutlined />}
-            // onClick={() => {
-            //     Inertia.post("/logout");
-            // }}
+            icon={<LogoutOutlined />}
+            onClick={async () => {
+              await logout();
+              router.push('/signin');
+            }}
           >
             Logout
           </Menu.Item>

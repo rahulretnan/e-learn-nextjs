@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { DeleteUser } from '~/gql/user/mutations';
 import gqlClient from '~/helpers/graphql-client';
-import { admin } from '../firebase/admin';
+import { admin } from '~/services/firebase/admin';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req?.method;
