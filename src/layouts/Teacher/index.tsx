@@ -68,7 +68,7 @@ const TeacherLayout = ({ children }: TProps<any>) => {
             key="h1"
             icon={<TeamOutlined />}
             onClick={() => {
-              router.push('/teacher/attendance');
+              router.push('/teacher/attendances');
             }}
           >
             Attendance
