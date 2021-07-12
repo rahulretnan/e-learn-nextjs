@@ -28,13 +28,23 @@ const TeacherList = () => {
       render: (value, item, index) => (page - 1) * 10 + index + 1,
     },
     {
-      title: 'Student Name',
+      title: 'Subject Name',
       dataIndex: 'user',
       render: (record) => get(record, 'name'),
       width: '25%',
     },
     {
-      title: 'Semester',
+      title: 'Attendance Percentage',
+      dataIndex: 'user',
+      render: (record) => get(record, 'email'),
+    },
+    {
+      title: 'Submitted Date',
+      dataIndex: 'user',
+      render: (record) => get(record, 'user_details.0.phone'),
+    },
+    {
+      title: 'Assignment',
       dataIndex: 'user',
       render: (record) => get(record, 'user_details.0.phone'),
     },
