@@ -1,16 +1,16 @@
 import firebaseAdmin from 'firebase-admin';
+import { isEmpty } from 'lodash';
 
-if (!firebaseAdmin.apps.length && firebaseAdmin.app.name !== 'Admin') {
-  firebaseAdmin.initializeApp(
-    {
-      credential: firebaseAdmin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    },
-    'Admin'
-  );
+console.log('Hello server outside', firebaseAdmin.apps);
+if (isEmpty(firebaseAdmin.apps)) {
+  console.log('Hello server', firebaseAdmin.apps);
+  firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  });
 }
 
 export const admin = firebaseAdmin;

@@ -65,3 +65,9 @@ export type TStudent = TUserDetails & {
   semester_id?: string | undefined;
   role: 'STUDENT';
 };
+
+export type TParent = TUserDetails & {
+  id?: string | undefined;
+  student_id?: string | undefined;
+  role: 'PARENT';
+};

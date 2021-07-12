@@ -109,3 +109,18 @@ export const GetSubjects = gql`
     }
   }
 `;
+
+export const GetParents = gql`
+  query getParents {
+    parents {
+      id
+      user {
+        name
+        email
+        user_details {
+          phone
+        }
+      }
+    }
+  }
+`;

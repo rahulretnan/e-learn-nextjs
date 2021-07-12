@@ -4,6 +4,7 @@ import 'firebase/auth';
 import jwtDecode from 'jwt-decode';
 
 if (!firebase.apps.length) {
+  console.log('Hello client');
   firebase.initializeApp({
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

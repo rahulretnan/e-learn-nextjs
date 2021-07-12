@@ -120,11 +120,20 @@ export const UpdateTeacherDepartment = gql`
     }
   }
 `;
+
 export const UpdateStudentDepartment = gql`
   mutation updateStudentDepartment($user_id: uuid!, $department_id: uuid) {
     insert_students(
       objects: { user_id: $user_id, department_id: $department_id }
     ) {
+      affected_rows
+    }
+  }
+`;
+
+export const UpdateParentStudent = gql`
+  mutation updateParentStudent($user_id: uuid!, $student_id: uuid) {
+    insert_parents(objects: { user_id: $user_id, student_id: $student_id }) {
       affected_rows
     }
   }

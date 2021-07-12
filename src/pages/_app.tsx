@@ -32,7 +32,9 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     const { token } = nookies.get(ctx);
     if (token) {
       try {
-        const result = await axios.post('/api/validate', { token });
+        const result = await axios.post('/api/validate', {
+          token,
+        });
         return { userData: result, ...appProps };
       } catch (e) {
         console.log(e);
