@@ -34,6 +34,12 @@ const TeacherList = () => {
       width: '25%',
     },
     {
+      title: 'Subject',
+      dataIndex: 'user',
+      render: (record) => get(record, 'name'),
+      width: '25%',
+    },
+    {
       title: 'Created at',
       dataIndex: 'user',
       render: (record) => get(record, 'email'),
