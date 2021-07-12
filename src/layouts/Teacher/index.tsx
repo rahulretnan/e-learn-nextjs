@@ -4,7 +4,7 @@ import { get } from 'lodash';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
-import { GetTeachersProfile } from '~/gql/teacher/queries';
+import { GetUserProfile } from '~/gql/user/queries';
 import { useAuth } from '~/hooks/useAuth';
 import { TProps } from '~/shared/types';
 
@@ -17,7 +17,7 @@ const TeacherLayout = ({ children }: TProps<any>) => {
   console.log(user_id);
 
   const [{ data }] = useQuery({
-    query: GetTeachersProfile,
+    query: GetUserProfile,
     requestPolicy: 'network-only',
     variables: { user_id: user_id },
     pause: !user_id,
@@ -25,7 +25,7 @@ const TeacherLayout = ({ children }: TProps<any>) => {
 
   useEffect(() => {
     if (data) {
-      setProfile(get(data, 'teachers.0.user.user_details.0.profile_picture'));
+      setProfile(get(data, 'users.0.user_details.0.profile_picture'));
     }
   }, [data]);
 

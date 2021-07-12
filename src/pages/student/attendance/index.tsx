@@ -1,8 +1,7 @@
 import React from 'react';
-import { Spinner } from '~/components';
 
 const index = () => {
-  return <Spinner />;
+  return <div>Subject attendance table</div>;
 };
 
 export default index;
