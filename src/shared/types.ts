@@ -45,6 +45,9 @@ export type TAuthActions = {
 export type TAuthInitialValues = TUser & {
   isAuthenticated?: boolean;
   loading?: boolean;
+  current_teacher_id?: string;
+  current_student_id?: string;
+  current_parent_id?: string;
 };
 
 export type TAuthContext = {

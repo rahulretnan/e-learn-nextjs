@@ -21,6 +21,9 @@ export const AuthProvider = ({ children }: TProps<TUser>) => {
     isAuthenticated: false,
     loading: false,
     user_id: undefined,
+    current_teacher_id: undefined,
+    current_student_id: undefined,
+    current_parent_id: undefined,
   };
 
   const [user, dispatch] = useReducer(AuthReducer, initialValues);

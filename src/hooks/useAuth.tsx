@@ -79,5 +79,6 @@ export const useAuth = () => {
     logout: getLogout,
     currentAccount,
     setLoading,
+    dispatch,
   };
 };

@@ -1,23 +1,28 @@
 import { Button, Table } from 'antd';
 import { get } from 'lodash';
+import moment from 'moment';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
-import { GetTeachers } from '~/gql/admin/queries';
+import { GetAssignments } from '~/gql/teacher/queries';
+import { useAuth } from '~/hooks/useAuth';
 
-const TeacherList = () => {
+const AssignmentList = () => {
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const [teachers, setTeachers] = useState([]);
+  const { current_teacher_id } = useAuth();
+  const [assignments, setAssignments] = useState([]);
 
   const [{ data }] = useQuery({
-    query: GetTeachers,
+    query: GetAssignments,
     requestPolicy: 'network-only',
+    variables: { teacher_id: current_teacher_id },
+    pause: !current_teacher_id,
   });
 
   useEffect(() => {
     if (data) {
-      setTeachers(get(data, 'teachers'));
+      setAssignments(get(data, 'assignments'));
     }
   }, [data]);
 
@@ -29,25 +34,24 @@ const TeacherList = () => {
     },
     {
       title: 'Assignment',
-      dataIndex: 'user',
-      render: (record) => get(record, 'name'),
+      dataIndex: 'assignment',
       width: '25%',
     },
     {
       title: 'Subject',
-      dataIndex: 'user',
-      render: (record) => get(record, 'name'),
+      dataIndex: 'subject',
+      render: (record) => get(record, 'subject'),
       width: '25%',
     },
     {
       title: 'Created at',
-      dataIndex: 'user',
-      render: (record) => get(record, 'email'),
+      dataIndex: 'created_at',
+      render: (record) => moment(record).format('ll'),
     },
     {
       title: 'Last Date of Submission',
-      dataIndex: 'user',
-      render: (record) => get(record, 'user_details.0.phone'),
+      dataIndex: 'last_date',
+      render: (record) => moment(record).format('ll'),
     },
   ];
 
@@ -58,7 +62,7 @@ const TeacherList = () => {
         className="float-right"
         type="primary"
         onClick={() => {
-          router.push(`/admin/teachers/new`);
+          router.push(`/teacher/assignments/new`);
         }}
       >
         Add
@@ -66,7 +70,7 @@ const TeacherList = () => {
       <Table
         bordered
         rowKey={(record) => record?.id}
-        dataSource={teachers}
+        dataSource={assignments}
         columns={columns}
         pagination={{
           onChange(current) {
@@ -76,7 +80,7 @@ const TeacherList = () => {
         // onRow={(record) => {
         //   return {
         //     onClick: () => {
-        //       router.push(`/admin/teachers/${record?.id}/edit`);
+        //       router.push(`/teacher/teachers/${record?.id}/edit`);
         //     },
         //   };
         // }}
@@ -85,4 +89,4 @@ const TeacherList = () => {
   );
 };
 
-export default TeacherList;
+export default AssignmentList;

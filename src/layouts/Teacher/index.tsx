@@ -10,7 +10,7 @@ import { TProps } from '~/shared/types';
 
 const TeacherLayout = ({ children }: TProps<any>) => {
   const router = useRouter();
-  const { name, logout, user_id } = useAuth();
+  const { name, logout, user_id, dispatch } = useAuth();
   const { Content, Footer, Sider } = Layout;
   const [profile, setProfile] = useState();
 
@@ -26,6 +26,10 @@ const TeacherLayout = ({ children }: TProps<any>) => {
   useEffect(() => {
     if (data) {
       setProfile(get(data, 'users.0.user_details.0.profile_picture'));
+      dispatch({
+        type: 'SET_USER',
+        payload: { current_teacher_id: get(data, 'users.0.teachers.0.id') },
+      });
     }
   }, [data]);
 
