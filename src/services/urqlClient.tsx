@@ -1,8 +1,8 @@
 import React from 'react';
 import { createClient, Provider } from 'urql';
-import { TChildrenProps } from '~/shared/types';
+import { TProps } from '~/shared/types';
 
-const GraphQlProvider = ({ children }: TChildrenProps) => {
+const GraphQlProvider = ({ children }: TProps<any>) => {
   const client = createClient({
     url: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || '',
     requestPolicy: 'network-only',

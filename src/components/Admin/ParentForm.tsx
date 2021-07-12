@@ -1,13 +1,12 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Upload } from 'antd';
-import { RcFile } from 'antd/lib/upload';
+import { Button, Form, Image, Input, Select, Upload } from 'antd';
 import { get, omit } from 'lodash';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { UpdateParentStudent } from '~/gql/admin/mutations';
 import { GetStudents } from '~/gql/admin/queries';
-import { beforeUpload, getBase64 } from '~/helpers/file-uploader';
+import { beforeUpload } from '~/helpers/file-uploader';
 import { useAuth } from '~/hooks/useAuth';
 import { TParent } from '~/shared/types';
 
@@ -16,7 +15,7 @@ export const ParentForm = () => {
   const [form] = Form.useForm();
   const { setLoading, register } = useAuth();
   const { Option } = Select;
-  const [file, setFile] = useState<RcFile>();
+  const [file, setFile] = useState<string>();
   const [students, setStudents] = useState([]);
   const [{ data }] = useQuery({
     query: GetStudents,
@@ -37,7 +36,7 @@ export const ParentForm = () => {
     const formData = {
       ...newData,
       role: 'PARENT',
-      profile_picture: await getBase64(file as RcFile),
+      profile_picture: file,
     };
 
     const { data: user } = await register(formData);
@@ -203,9 +202,11 @@ export const ParentForm = () => {
           beforeUpload={(file) => {
             beforeUpload(file, setFile);
           }}
+          onRemove={() => setFile(undefined)}
         >
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
+        {file ? <Image src={file || ''} alt="image" width={100} /> : ''}
       </Form.Item>
 
       <Form.Item>

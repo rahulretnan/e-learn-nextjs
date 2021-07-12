@@ -5,7 +5,7 @@ export type TProps<P> = P & PropsWithChildren<any>;
 export type TRole = 'ADMIN' | 'TEACHER' | 'STUDENT' | 'PARENT';
 
 export type TUser = {
-  uid: string | undefined;
+  user_id: string | undefined;
   name: string | undefined;
   email: string | undefined;
   token: string | undefined;

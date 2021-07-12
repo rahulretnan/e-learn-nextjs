@@ -3,19 +3,19 @@ import {
   Button,
   DatePicker,
   Form,
+  Image,
   Input,
   InputNumber,
   Select,
   Upload,
 } from 'antd';
-import { RcFile } from 'antd/lib/upload';
 import { get, omit } from 'lodash';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { UpdateStudentDepartment } from '~/gql/admin/mutations';
-import { GetDepartments } from '~/gql/admin/queries';
-import { beforeUpload, getBase64 } from '~/helpers/file-uploader';
+import { GetDepartmentsGetCoursesGetSemesters } from '~/gql/admin/queries';
+import { beforeUpload } from '~/helpers/file-uploader';
 import { useAuth } from '~/hooks/useAuth';
 import { TStudent } from '~/shared/types';
 
@@ -24,10 +24,13 @@ export const StudentForm = () => {
   const [form] = Form.useForm();
   const { setLoading, register } = useAuth();
   const { Option } = Select;
-  const [file, setFile] = useState<RcFile>();
+  const [file, setFile] = useState<string>();
   const [departments, setDepartments] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+
   const [{ data }] = useQuery({
-    query: GetDepartments,
+    query: GetDepartmentsGetCoursesGetSemesters,
     requestPolicy: 'network-only',
   });
 
@@ -36,16 +39,23 @@ export const StudentForm = () => {
   useEffect(() => {
     if (data) {
       setDepartments(get(data, 'departments'));
+      setCourses(get(data, 'courses'));
+      setSemesters(get(data, 'semesters'));
     }
   }, [data]);
 
   const onFinish = async (values: TStudent) => {
     setLoading(true);
-    const newData = omit(values, ['confirm', 'department_id']);
+    const newData = omit(values, [
+      'confirm',
+      'department_id',
+      'course_id',
+      'semester_id',
+    ]);
     const formData = {
       ...newData,
       role: 'STUDENT',
-      profile_picture: await getBase64(file as RcFile),
+      profile_picture: file,
     };
 
     const { data: user } = await register(formData);
@@ -53,6 +63,8 @@ export const StudentForm = () => {
       await updateStudentDepartment({
         user_id: user?.id,
         department_id: values?.department_id,
+        course_id: values?.course_id,
+        semester_id: values?.semester_id,
       });
     form.resetFields();
     setLoading(false);
@@ -311,6 +323,46 @@ export const StudentForm = () => {
               ))}
             </Select>
           </Form.Item>
+          <Form.Item
+            name="course_id"
+            label="Course"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select defaultValue="" style={{ width: 120 }}>
+              <Option disabled value="">
+                Select
+              </Option>
+              {courses.map(({ course, id }) => (
+                <Option key={`dep${id}`} value={id}>
+                  {course}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="semester_id"
+            label="Semester"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select defaultValue="" style={{ width: 120 }}>
+              <Option disabled value="">
+                Select
+              </Option>
+              {semesters.map(({ semester, id }) => (
+                <Option key={`dep${id}`} value={id}>
+                  {semester}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
         </div>
       </div>
 
@@ -319,9 +371,11 @@ export const StudentForm = () => {
           beforeUpload={(file) => {
             beforeUpload(file, setFile);
           }}
+          onRemove={() => setFile(undefined)}
         >
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
+        {file ? <Image src={file || ''} alt="image" width={100} /> : ''}
       </Form.Item>
 
       <Form.Item>

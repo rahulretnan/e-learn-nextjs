@@ -12,15 +12,15 @@ import {
 
 export const AuthProviderContext = createContext({} as TAuthContext);
 
-export const AuthProvider = ({ children, userData }: TProps<TUser>) => {
+export const AuthProvider = ({ children }: TProps<TUser>) => {
   const initialValues: TAuthInitialValues = {
-    name: userData?.name || undefined,
-    email: userData?.email || undefined,
-    token: userData?.token || undefined,
-    role: userData?.role || undefined,
-    isAuthenticated: userData?.isAuthenticated || false,
+    name: undefined,
+    email: undefined,
+    token: undefined,
+    role: undefined,
+    isAuthenticated: false,
     loading: false,
-    uid: userData?.uid || undefined,
+    user_id: undefined,
   };
 
   const [user, dispatch] = useReducer(AuthReducer, initialValues);
@@ -33,13 +33,14 @@ export const AuthProvider = ({ children, userData }: TProps<TUser>) => {
         return;
       }
 
-      const token = await user.getIdToken();
-      const { name, uid, email, role } = jwtDecode<any>(token);
+      const token = await user.getIdToken(true);
+      const { name, user_id, email, role } = jwtDecode<any>(token);
+
       dispatch({
         type: 'SET_USER',
         payload: {
           name,
-          uid,
+          user_id,
           email,
           role,
           token,

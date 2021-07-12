@@ -13,10 +13,10 @@ type TUserProps = AppProps & {
   userData: TAuthInitialValues;
 };
 
-function MyApp({ Component, pageProps, userData }: TUserProps) {
+function MyApp({ Component, pageProps }: TUserProps) {
   return (
     <GraphQlProvider>
-      <AppContextProvider userData={userData}>
+      <AppContextProvider>
         <AppLayout>
           <Component {...pageProps} />
         </AppLayout>
@@ -32,10 +32,10 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     const { token } = nookies.get(ctx);
     if (token) {
       try {
-        const result = await axios.post('/api/validate', {
+        await axios.post('/api/validate', {
           token,
         });
-        return { userData: result, ...appProps };
+        return { ...appProps };
       } catch (e) {
         console.log(e);
       }

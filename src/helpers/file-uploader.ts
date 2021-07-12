@@ -2,9 +2,9 @@ import { message } from 'antd';
 import { RcFile } from 'antd/lib/upload';
 import { Dispatch, SetStateAction } from 'react';
 
-export const beforeUpload = (
+export const beforeUpload = async (
   file: RcFile,
-  setFile: Dispatch<SetStateAction<RcFile | undefined>>
+  setFile: Dispatch<SetStateAction<string | undefined>>
 ) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
@@ -16,7 +16,8 @@ export const beforeUpload = (
     message.error('Image size must be less than 2MB!');
     return false;
   }
-  setFile(file);
+  const url = await getBase64(file);
+  setFile(url as string);
   return isJpgOrPng && isLt2M;
 };
 

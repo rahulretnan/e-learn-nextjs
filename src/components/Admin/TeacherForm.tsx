@@ -3,19 +3,19 @@ import {
   Button,
   DatePicker,
   Form,
+  Image,
   Input,
   InputNumber,
   Select,
   Upload,
 } from 'antd';
-import { RcFile } from 'antd/lib/upload';
 import { get, omit } from 'lodash';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { UpdateTeacherDepartment } from '~/gql/admin/mutations';
 import { GetDepartments } from '~/gql/admin/queries';
-import { beforeUpload, getBase64 } from '~/helpers/file-uploader';
+import { beforeUpload } from '~/helpers/file-uploader';
 import { useAuth } from '~/hooks/useAuth';
 import { TTeacher } from '~/shared/types';
 
@@ -24,7 +24,7 @@ export const TeacherForm = () => {
   const [form] = Form.useForm();
   const { setLoading, register } = useAuth();
   const { Option } = Select;
-  const [file, setFile] = useState<RcFile>();
+  const [file, setFile] = useState<string>();
   const [departments, setDepartments] = useState([]);
   const [{ data }] = useQuery({
     query: GetDepartments,
@@ -44,7 +44,7 @@ export const TeacherForm = () => {
     const formData = {
       ...newData,
       role: 'TEACHER',
-      profile_picture: await getBase64(file as RcFile),
+      profile_picture: file,
     };
 
     const { data: user } = await register(formData);
@@ -318,9 +318,11 @@ export const TeacherForm = () => {
           beforeUpload={(file) => {
             beforeUpload(file, setFile);
           }}
+          onRemove={() => setFile(undefined)}
         >
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
+        {file ? <Image src={file || ''} alt="image" width={100} /> : ''}
       </Form.Item>
 
       <Form.Item>

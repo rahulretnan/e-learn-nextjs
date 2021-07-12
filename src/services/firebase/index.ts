@@ -39,23 +39,14 @@ export const currentAccount = async () => {
         const getUserData = async () => {
           if (user) {
             const userFields = await user.getIdToken(true).then((token) => {
-              const {
-                name,
-                user_id,
-                email,
-                email_verified,
-                phone_number,
-                role,
-              } = jwtDecode<any>(token);
+              const { name, user_id, email, role } = jwtDecode<any>(token);
 
               return {
                 user_id,
                 name,
                 email,
-                email_verified,
                 role,
                 token,
-                phone: phone_number,
               };
             });
             return userFields;

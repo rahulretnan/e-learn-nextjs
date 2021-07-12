@@ -21,7 +21,7 @@ export const validate = async (token: string) => {
     const user = await admin.auth().getUser(decodedToken.uid);
     const result = {
       user: {
-        uid: user.uid,
+        user_id: user.uid,
         email: user.email,
         name: user.displayName,
         role: user.customClaims?.role,

@@ -93,6 +93,31 @@ export const GetSemesters = gql`
   }
 `;
 
+export const GetDepartmentsGetCoursesGetSemesters = gql`
+  query getDepartments {
+    departments {
+      id
+      department
+    }
+    courses {
+      id
+      course
+      department {
+        id
+        department
+      }
+    }
+    semesters {
+      id
+      semester
+      course {
+        id
+        course
+      }
+    }
+  }
+`;
+
 export const GetSubjects = gql`
   query getSubjects {
     subjects {

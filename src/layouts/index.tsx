@@ -15,8 +15,8 @@ const Layouts: any = {
 
 const AppLayout = ({ children }: PropsWithChildren<any>) => {
   const { role, isAuthenticated, loading } = useAuth();
-  if (loading) <Spinner />;
   const { pathname } = useRouter();
+  if (loading) return <Spinner />;
   const getLayout = () => {
     if (role === 'ADMIN' && pathname.includes('admin') && isAuthenticated) {
       return 'admin';

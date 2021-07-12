@@ -122,9 +122,19 @@ export const UpdateTeacherDepartment = gql`
 `;
 
 export const UpdateStudentDepartment = gql`
-  mutation updateStudentDepartment($user_id: uuid!, $department_id: uuid) {
+  mutation updateStudentDepartment(
+    $user_id: uuid!
+    $department_id: uuid
+    $course_id: uuid
+    $semester_id: uuid
+  ) {
     insert_students(
-      objects: { user_id: $user_id, department_id: $department_id }
+      objects: {
+        user_id: $user_id
+        department_id: $department_id
+        course_id: $course_id
+        semester_id: $semester_id
+      }
     ) {
       affected_rows
     }
