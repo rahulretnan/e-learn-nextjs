@@ -77,13 +77,13 @@ const AssignmentList = () => {
             setPage(current);
           },
         }}
-        // onRow={(record) => {
-        //   return {
-        //     onClick: () => {
-        //       router.push(`/teacher/teachers/${record?.id}/edit`);
-        //     },
-        //   };
-        // }}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              router.push(`/teacher/assignments/${record?.id}`);
+            },
+          };
+        }}
       />
     </>
   );

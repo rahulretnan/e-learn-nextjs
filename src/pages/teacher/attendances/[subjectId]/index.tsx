@@ -1,39 +1,46 @@
-import { Button, Form, Input, Modal, Select, Table } from 'antd';
+import { Button, Form, InputNumber, Modal, Select, Table } from 'antd';
 import { get } from 'lodash';
+import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import {
-  AddSubject,
-  DeleteSubject,
-  UpdateSubject,
-} from '~/gql/admin/mutations';
-import { GetSubjects } from '~/gql/admin/queries';
+  AddAttendance,
+  DeleteAttendance,
+  UpdateAttendance,
+} from '~/gql/teacher/mutation';
+import { GetStudentAttendance } from '~/gql/teacher/queries';
+import { useAuth } from '~/hooks/useAuth';
 
-const Subject = () => {
+const Attendance = () => {
+  const router = useRouter();
+  const { subjectId } = router.query;
+  const { current_teacher_id } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [page, setPage] = useState(1);
   const [action, setAction] = useState<string>();
   const [initialValues, setInitialValues] =
-    useState<{ id: string; semester_id: string; subject: string }>();
+    useState<{ id: string; student_id: string; attendance: number }>();
   const [form] = Form.useForm();
   const { Option } = Select;
 
-  const [semesters, setSemesters] = useState([]);
-  const [subjects, setSubjects] = useState([]);
+  const [studentAttendances, setStudentAttendances] = useState([]);
+  const [students, setStudents] = useState([]);
 
   const [{ data }, refetch] = useQuery({
-    query: GetSubjects,
+    query: GetStudentAttendance,
     requestPolicy: 'network-only',
+    variables: { subject_id: subjectId },
+    pause: !subjectId,
   });
 
-  const [, addSubject] = useMutation(AddSubject);
-  const [, updateSubject] = useMutation(UpdateSubject);
-  const [, deleteSubject] = useMutation(DeleteSubject);
+  const [, addAttendance] = useMutation(AddAttendance);
+  const [, updateAttendance] = useMutation(UpdateAttendance);
+  const [, deleteAttendance] = useMutation(DeleteAttendance);
 
   useEffect(() => {
     if (data) {
-      setSemesters(get(data, 'semesters'));
-      setSubjects(get(data, 'subjects'));
+      setStudentAttendances(get(data, 'attendances'));
+      setStudents(get(data, 'student_subjects'));
     }
   }, [data]);
 
@@ -44,7 +51,7 @@ const Subject = () => {
   const showAddModal = () => {
     setAction('Add');
     setIsModalVisible(true);
-    setInitialValues({ id: '', semester_id: '', subject: '' });
+    setInitialValues({ id: '', student_id: '', attendance: 0 });
   };
 
   const showEditModal = useCallback(
@@ -53,11 +60,11 @@ const Subject = () => {
       setIsModalVisible(true);
       setInitialValues({
         id: data.id,
-        subject: data.subject,
-        semester_id: data.semester?.id,
+        attendance: data.attendance,
+        student_id: data.student?.id,
       });
     },
-    [initialValues, action, subjects]
+    [initialValues, action, students]
   );
 
   const reset = () => {
@@ -67,15 +74,17 @@ const Subject = () => {
 
   const onFinish = async (values) => {
     if (action === 'Add') {
-      await addSubject({
-        semester_id: values?.semester,
-        subject: values?.subject,
+      await addAttendance({
+        teacher_id: current_teacher_id,
+        subject_id: subjectId,
+        student_id: values?.student_id,
+        attendance: values?.attendance,
       });
     } else {
-      await updateSubject({
+      await updateAttendance({
         id: initialValues?.id,
-        semester_id: values?.semester,
-        subject: values?.subject,
+        student_id: values?.student_id,
+        attendance: values?.attendance,
       });
     }
     refetch({ requestPolicy: 'network-only' });
@@ -89,15 +98,15 @@ const Subject = () => {
       width: 50,
     },
     {
-      title: 'Semester',
-      dataIndex: 'semester',
-      render: (record) => get(record, 'semester'),
-      key: 'semester',
+      title: 'Student',
+      dataIndex: 'student',
+      render: (record) => get(record, 'user.name'),
+      key: 'student',
     },
     {
-      title: 'Subject',
-      dataIndex: 'subject',
-      key: 'subject',
+      title: 'Attendance',
+      dataIndex: 'attendance',
+      key: 'attendance',
     },
   ];
 
@@ -113,7 +122,7 @@ const Subject = () => {
       </Button>
       <Table
         bordered
-        dataSource={subjects}
+        dataSource={studentAttendances}
         columns={columns}
         pagination={{
           onChange(current) {
@@ -127,7 +136,7 @@ const Subject = () => {
         }}
       />
       <Modal
-        title={`${action} semester`}
+        title={`${action} student`}
         visible={isModalVisible}
         footer={null}
         onCancel={reset}
@@ -142,8 +151,8 @@ const Subject = () => {
           initialValues={initialValues}
         >
           <Form.Item
-            name="semester"
-            label="Semester"
+            name="student_id"
+            label="Student"
             rules={[
               {
                 required: true,
@@ -151,31 +160,31 @@ const Subject = () => {
             ]}
           >
             <Select
-              defaultValue={initialValues?.semester_id}
-              style={{ width: 120 }}
+              defaultValue={initialValues?.student_id}
+              style={{ width: 200 }}
             >
               <Option disabled value="">
                 Select
               </Option>
-              {semesters.map(({ semester, id }) => (
+              {students.map(({ student, id }) => (
                 <Option key={`dep${id}`} value={id}>
-                  {semester}
+                  {get(student, 'user.name')}
                 </Option>
               ))}
             </Select>
           </Form.Item>
           <Form.Item
-            name="subject"
-            label="Subject"
+            name="attendance"
+            label="Attendance"
             rules={[
               {
                 required: true,
-                message: 'Please input a subject name!',
+                message: 'Please input a attendance!',
                 whitespace: true,
               },
             ]}
           >
-            <Input />
+            <InputNumber />
           </Form.Item>
 
           <Form.Item>
@@ -188,7 +197,7 @@ const Subject = () => {
                 className="float-right"
                 danger
                 onClick={async () => {
-                  await deleteSubject({ id: initialValues?.id });
+                  await deleteAttendance({ id: initialValues?.id });
                   refetch();
                   reset();
                 }}
@@ -205,4 +214,4 @@ const Subject = () => {
   );
 };
 
-export default Subject;
+export default Attendance;

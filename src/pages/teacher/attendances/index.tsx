@@ -1,23 +1,44 @@
-import { Button, Table } from 'antd';
+import { Select, Table } from 'antd';
 import { get } from 'lodash';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
-import { GetTeachers } from '~/gql/admin/queries';
+import {
+  getSubjectBySemester,
+  GetTeacherSemester,
+} from '~/gql/teacher/queries';
+import { useAuth } from '~/hooks/useAuth';
 
 const TeacherList = () => {
   const router = useRouter();
+  const { current_teacher_id } = useAuth();
   const [page, setPage] = useState(1);
-  const [teachers, setTeachers] = useState([]);
+  const [teacherSemesters, setTeacherSemesters] = useState([]);
+  const [semesterId, setSemesterId] = useState('');
+  const [subjects, setSubjects] = useState([]);
+  const { Option } = Select;
 
-  const [{ data }] = useQuery({
-    query: GetTeachers,
+  const [{ data: semesters }] = useQuery({
+    query: GetTeacherSemester,
     requestPolicy: 'network-only',
+    variables: { teacher_id: current_teacher_id },
+  });
+  const [{ data }] = useQuery({
+    query: getSubjectBySemester,
+    requestPolicy: 'network-only',
+    variables: { semester_id: semesterId },
+    pause: !semesterId,
   });
 
   useEffect(() => {
+    if (semesters) {
+      setTeacherSemesters(get(semesters, 'teacher_semesters'));
+    }
+  }, [semesters]);
+
+  useEffect(() => {
     if (data) {
-      setTeachers(get(data, 'teachers'));
+      setSubjects(get(data, 'subjects'));
     }
   }, [data]);
 
@@ -28,47 +49,44 @@ const TeacherList = () => {
       render: (value, item, index) => (page - 1) * 10 + index + 1,
     },
     {
-      title: 'Student Name',
-      dataIndex: 'user',
-      render: (record) => get(record, 'name'),
-      width: '25%',
-    },
-    {
-      title: 'Semester',
-      dataIndex: 'user',
-      render: (record) => get(record, 'user_details.0.phone'),
+      title: 'Subject',
+      dataIndex: 'subject',
     },
   ];
 
   return (
     <>
-      <Button
-        htmlType="button"
-        className="float-right"
-        type="primary"
-        onClick={() => {
-          router.push(`/admin/teachers/new`);
-        }}
+      <Select
+        style={{ width: 120 }}
+        value={semesterId}
+        onChange={(value) => setSemesterId(value)}
       >
-        Add
-      </Button>
+        <Option disabled value="">
+          Select
+        </Option>
+        {teacherSemesters.map(({ semester: { semester, id } }) => (
+          <Option key={`dep${id}`} value={id}>
+            {semester}
+          </Option>
+        ))}
+      </Select>
       <Table
         bordered
         rowKey={(record) => record?.id}
-        dataSource={teachers}
+        dataSource={subjects}
         columns={columns}
         pagination={{
           onChange(current) {
             setPage(current);
           },
         }}
-        // onRow={(record) => {
-        //   return {
-        //     onClick: () => {
-        //       router.push(`/admin/teachers/${record?.id}/edit`);
-        //     },
-        //   };
-        // }}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              router.push(`/teacher/attendances/${record?.id}`);
+            },
+          };
+        }}
       />
     </>
   );

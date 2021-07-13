@@ -54,3 +54,63 @@ export const GetAssignmentFormDetails = gql`
     }
   }
 `;
+
+export const getStudentAssignments = gql`
+  query getStudentsAssignment($assignment_id: uuid!) {
+    student_assignments(where: { assignment_id: { _eq: $assignment_id } }) {
+      student {
+        user {
+          name
+        }
+        semester {
+          semester
+        }
+      }
+      created_at
+      file
+    }
+  }
+`;
+
+export const getSubjectBySemester = gql`
+  query getSubjectBySemester($semester_id: uuid) {
+    subjects(where: { semester_id: { _eq: $semester_id } }) {
+      id
+      subject
+    }
+  }
+`;
+
+export const GetTeacherSemester = gql`
+  query getTeacherSemester($teacher_id: uuid!) {
+    teacher_semesters(where: { teacher_id: { _eq: $teacher_id } }) {
+      semester {
+        id
+        semester
+      }
+    }
+  }
+`;
+
+export const GetStudentAttendance = gql`
+  query getStudentAttendance($subject_id: uuid!) {
+    student_subjects(where: { subject_id: { _eq: $subject_id } }) {
+      student {
+        id
+        user {
+          name
+        }
+      }
+    }
+    attendances(where: { subject_id: { _eq: $subject_id } }) {
+      id
+      student {
+        id
+        user {
+          name
+        }
+      }
+      attendance
+    }
+  }
+`;

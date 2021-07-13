@@ -21,3 +21,46 @@ export const AddAssignment = gql`
     }
   }
 `;
+
+export const AddAttendance = gql`
+  mutation addAttendance(
+    $teacher_id: uuid
+    $subject_id: uuid
+    $student_id: uuid
+    $attendance: numeric
+  ) {
+    insert_attendances(
+      objects: {
+        teacher_id: $teacher_id
+        subject_id: $subject_id
+        student_id: $student_id
+        attendance: $attendance
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+export const UpdateAttendance = gql`
+  mutation updateAttendance(
+    $id: uuid!
+    $student_id: uuid
+    $attendance: String
+  ) {
+    update_attendances_by_pk(
+      pk_columns: { id: $id }
+      _set: { student_id: $student_id, attendance: $attendance }
+    ) {
+      id
+    }
+  }
+`;
+
+export const DeleteAttendance = gql`
+  mutation deleteAttendance($id: uuid!) {
+    delete_attendances_by_pk(id: $id) {
+      id
+    }
+  }
+`;
