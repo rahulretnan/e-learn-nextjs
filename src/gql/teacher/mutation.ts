@@ -64,3 +64,42 @@ export const DeleteAttendance = gql`
     }
   }
 `;
+
+export const AddMark = gql`
+  mutation addMark(
+    $teacher_id: uuid
+    $subject_id: uuid
+    $student_id: uuid
+    $mark: numeric
+  ) {
+    insert_marks(
+      objects: {
+        teacher_id: $teacher_id
+        subject_id: $subject_id
+        student_id: $student_id
+        mark: $mark
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+export const UpdateMark = gql`
+  mutation updateMark($id: uuid!, $student_id: uuid, $mark: String) {
+    update_marks_by_pk(
+      pk_columns: { id: $id }
+      _set: { student_id: $student_id, mark: $mark }
+    ) {
+      id
+    }
+  }
+`;
+
+export const DeleteMark = gql`
+  mutation deleteMark($id: uuid!) {
+    delete_marks_by_pk(id: $id) {
+      id
+    }
+  }
+`;

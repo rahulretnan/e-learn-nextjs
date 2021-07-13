@@ -1,5 +1,20 @@
 import { gql } from 'urql/core';
 
+export const TeacherDashboardDetails = gql`
+  query DashboardDetails($teacher_id: uuid!) {
+    students_aggregate {
+      aggregate {
+        count
+      }
+    }
+    assignments_aggregate(where: { teacher_id: { _eq: $teacher_id } }) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
 export const GetTeacher = gql`
   query getTeacher($user_id: uuid) {
     teachers(where: { user_id: { _eq: $user_id } }) {
@@ -111,6 +126,29 @@ export const GetStudentAttendance = gql`
         }
       }
       attendance
+    }
+  }
+`;
+
+export const GetStudentMark = gql`
+  query getStudentMark($subject_id: uuid!) {
+    student_subjects(where: { subject_id: { _eq: $subject_id } }) {
+      student {
+        id
+        user {
+          name
+        }
+      }
+    }
+    marks(where: { subject_id: { _eq: $subject_id } }) {
+      id
+      student {
+        id
+        user {
+          name
+        }
+      }
+      mark
     }
   }
 `;

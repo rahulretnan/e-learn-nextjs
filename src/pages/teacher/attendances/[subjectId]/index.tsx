@@ -166,9 +166,9 @@ const Attendance = () => {
               <Option disabled value="">
                 Select
               </Option>
-              {students.map(({ student, id }) => (
+              {students.map(({ student: { user, id } }) => (
                 <Option key={`dep${id}`} value={id}>
-                  {get(student, 'user.name')}
+                  {get(user, 'name')}
                 </Option>
               ))}
             </Select>
@@ -180,7 +180,6 @@ const Attendance = () => {
               {
                 required: true,
                 message: 'Please input a attendance!',
-                whitespace: true,
               },
             ]}
           >

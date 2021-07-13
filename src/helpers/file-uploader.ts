@@ -6,19 +6,14 @@ export const beforeUpload = async (
   file: RcFile,
   setFile: Dispatch<SetStateAction<string | undefined>>
 ) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('Only upload JPG or PNG files!');
-    return false;
-  }
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
-    message.error('Image size must be less than 2MB!');
+    message.error('File size must be less than 2MB!');
     return false;
   }
   const url = await getBase64(file);
   setFile(url as string);
-  return isJpgOrPng && isLt2M;
+  return isLt2M;
 };
 
 export const getBase64 = async (file: RcFile) => {

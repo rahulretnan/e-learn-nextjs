@@ -57,7 +57,16 @@ const StudentLayout = ({ children }: TProps<any>) => {
               router.push('/student');
             }}
           >
-            Assignment list
+            Dashboard
+          </Menu.Item>
+          <Menu.Item
+            key="h44"
+            icon={<TeamOutlined />}
+            onClick={() => {
+              router.push('/student/assignments');
+            }}
+          >
+            Assignments
           </Menu.Item>
           <Menu.Item
             key="h1"

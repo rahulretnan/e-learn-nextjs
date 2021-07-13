@@ -57,7 +57,7 @@ const TeacherLayout = ({ children }: TProps<any>) => {
               router.push('/teacher');
             }}
           >
-            Students list
+            Dashboard
           </Menu.Item>
           <Menu.Item
             key="u1"
