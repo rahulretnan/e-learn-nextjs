@@ -148,3 +148,28 @@ export const UpdateParentStudent = gql`
     }
   }
 `;
+
+export const AssignTeacherSubject = gql`
+  mutation assignTeacher(
+    $course_id: uuid!
+    $teacher_id: uuid!
+    $semester_id: uuid!
+    $subject_id: uuid!
+  ) {
+    insert_teacher_courses(
+      objects: { course_id: $course_id, teacher_id: $teacher_id }
+    ) {
+      affected_rows
+    }
+    insert_teacher_semesters(
+      objects: { semester_id: $semester_id, teacher_id: $teacher_id }
+    ) {
+      affected_rows
+    }
+    insert_teacher_subjects(
+      objects: { teacher_id: $teacher_id, subject_id: $subject_id }
+    ) {
+      affected_rows
+    }
+  }
+`;

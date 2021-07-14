@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
-import { Spinner } from '~/components';
 import { useAuth } from '~/hooks/useAuth';
 import AdminLayout from './Admin';
 import PublicLayout from './Public';
@@ -14,9 +13,8 @@ const Layouts: any = {
 };
 
 const AppLayout = ({ children }: PropsWithChildren<any>) => {
-  const { role, isAuthenticated, loading } = useAuth();
+  const { role, isAuthenticated } = useAuth();
   const { pathname } = useRouter();
-  if (loading) return <Spinner />;
   const getLayout = () => {
     if (role === 'ADMIN' && pathname.includes('admin') && isAuthenticated) {
       return 'admin';

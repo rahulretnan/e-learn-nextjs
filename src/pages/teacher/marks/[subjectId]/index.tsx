@@ -162,9 +162,9 @@ const Mark = () => {
               <Option disabled value="">
                 Select
               </Option>
-              {students.map(({ student, id }) => (
+              {students.map(({ student: { user, id } }) => (
                 <Option key={`dep${id}`} value={id}>
-                  {get(student, 'user.name')}
+                  {get(user, 'name')}
                 </Option>
               ))}
             </Select>
@@ -176,7 +176,6 @@ const Mark = () => {
               {
                 required: true,
                 message: 'Please input a mark!',
-                whitespace: true,
               },
             ]}
           >

@@ -14,7 +14,11 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { UpdateStudentDepartment } from '~/gql/admin/mutations';
-import { GetDepartmentsGetCoursesGetSemesters } from '~/gql/admin/queries';
+import {
+  GetCoursesByDepartment,
+  GetDepartments,
+  GetSemestersByCourse,
+} from '~/gql/admin/queries';
 import { beforeUpload } from '~/helpers/file-uploader';
 import { useAuth } from '~/hooks/useAuth';
 import { TStudent } from '~/shared/types';
@@ -29,20 +33,46 @@ export const StudentForm = () => {
   const [courses, setCourses] = useState([]);
   const [semesters, setSemesters] = useState([]);
 
-  const [{ data }] = useQuery({
-    query: GetDepartmentsGetCoursesGetSemesters,
+  const [departmentId, setDepartmentId] = useState('');
+  const [courseId, setCourseId] = useState('');
+  const [semesterId, setSemesterId] = useState('');
+
+  const [{ data: department }] = useQuery({
+    query: GetDepartments,
     requestPolicy: 'network-only',
+  });
+  const [{ data: course }] = useQuery({
+    query: GetCoursesByDepartment,
+    requestPolicy: 'network-only',
+    variables: { department_id: departmentId },
+    pause: !departmentId,
+  });
+  const [{ data: semester }] = useQuery({
+    query: GetSemestersByCourse,
+    requestPolicy: 'network-only',
+    variables: { course_id: courseId },
+    pause: !courseId,
   });
 
   const [, updateStudentDepartment] = useMutation(UpdateStudentDepartment);
 
   useEffect(() => {
-    if (data) {
-      setDepartments(get(data, 'departments'));
-      setCourses(get(data, 'courses'));
-      setSemesters(get(data, 'semesters'));
+    if (department) {
+      setDepartments(get(department, 'departments'));
     }
-  }, [data]);
+  }, [department]);
+
+  useEffect(() => {
+    if (course) {
+      setCourses(get(course, 'courses'));
+    }
+  }, [course]);
+
+  useEffect(() => {
+    if (semester) {
+      setSemesters(get(semester, 'semesters'));
+    }
+  }, [semester]);
 
   const onFinish = async (values: TStudent) => {
     setLoading(true);
@@ -312,7 +342,18 @@ export const StudentForm = () => {
               },
             ]}
           >
-            <Select defaultValue="" style={{ width: 120 }}>
+            <Select
+              defaultValue=""
+              onChange={(value) => {
+                setCourseId('');
+                setCourses([]);
+                setSemesters([]);
+                setSemesterId('');
+                form.setFieldsValue({ course_id: '', semester_id: '' });
+                setDepartmentId(value);
+              }}
+              style={{ width: 120 }}
+            >
               <Option disabled value="">
                 Select
               </Option>
@@ -332,7 +373,17 @@ export const StudentForm = () => {
               },
             ]}
           >
-            <Select defaultValue="" style={{ width: 120 }}>
+            <Select
+              defaultValue=""
+              disabled={courses.length === 0}
+              value={courseId}
+              onChange={(value) => {
+                setSemesters([]);
+                form.setFieldsValue({ semester_id: '' });
+                setCourseId(value);
+              }}
+              style={{ width: 120 }}
+            >
               <Option disabled value="">
                 Select
               </Option>
@@ -352,7 +403,15 @@ export const StudentForm = () => {
               },
             ]}
           >
-            <Select defaultValue="" style={{ width: 120 }}>
+            <Select
+              disabled={semesters.length === 0}
+              defaultValue=""
+              value={semesterId}
+              style={{ width: 120 }}
+              onChange={(value) => {
+                setSemesterId(value);
+              }}
+            >
               <Option disabled value="">
                 Select
               </Option>

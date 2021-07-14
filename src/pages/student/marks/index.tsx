@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { get } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
-import { GetAttendance, GetStudentDetails } from '~/gql/student/queries';
+import { GetMarks, GetStudentDetails } from '~/gql/student/queries';
 import { useAuth } from '~/hooks/useAuth';
 
 const Mark = () => {
@@ -19,7 +19,7 @@ const Mark = () => {
   });
 
   const [{ data }] = useQuery({
-    query: GetAttendance,
+    query: GetMarks,
     requestPolicy: 'network-only',
     variables: { semester_id: semesterId, student_id: current_student_id },
     pause: !semesterId && !current_student_id,
@@ -48,9 +48,9 @@ const Mark = () => {
       dataIndex: 'subject',
     },
     {
-      title: 'Attendance',
-      dataIndex: 'attendances',
-      render: (record) => get(record, '0.attendance'),
+      title: 'Mark',
+      dataIndex: 'marks',
+      render: (record) => get(record, '0.mark'),
     },
   ];
 

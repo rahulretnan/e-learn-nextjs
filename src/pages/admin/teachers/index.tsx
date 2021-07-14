@@ -57,6 +57,16 @@ const TeacherList = () => {
       >
         Add
       </Button>
+      <Button
+        htmlType="button"
+        className="float-right mr-4"
+        type="primary"
+        onClick={() => {
+          router.push(`/admin/teachers/assign`);
+        }}
+      >
+        Assign Subject
+      </Button>
       <Table
         bordered
         rowKey={(record) => record?.id}

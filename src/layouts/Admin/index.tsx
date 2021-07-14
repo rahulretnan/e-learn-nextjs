@@ -2,13 +2,15 @@ import { LogoutOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Layout, Menu } from 'antd';
 import { useRouter } from 'next/router';
 import React from 'react';
+import { Spinner } from '~/components';
 import { useAuth } from '~/hooks/useAuth';
 import { TProps } from '~/shared/types';
 
 const AdminLayout = ({ children }: TProps<any>) => {
   const router = useRouter();
-  const { name, logout } = useAuth();
+  const { name, logout, loading } = useAuth();
   const { Content, Footer, Sider } = Layout;
+  if (loading) return <Spinner />;
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider>
@@ -32,33 +34,7 @@ const AdminLayout = ({ children }: TProps<any>) => {
           >
             Dashboard
           </Menu.Item>
-          <Menu.Item
-            key="u1"
-            icon={<TeamOutlined />}
-            onClick={() => {
-              router.push('/admin/teachers');
-            }}
-          >
-            Teachers
-          </Menu.Item>
-          <Menu.Item
-            key="h1"
-            icon={<TeamOutlined />}
-            onClick={() => {
-              router.push('/admin/students');
-            }}
-          >
-            Students
-          </Menu.Item>
-          <Menu.Item
-            key="c1"
-            icon={<TeamOutlined />}
-            onClick={() => {
-              router.push('/admin/parents');
-            }}
-          >
-            Parents
-          </Menu.Item>
+
           <Menu.Item
             key="dd1"
             icon={<TeamOutlined />}
@@ -95,6 +71,34 @@ const AdminLayout = ({ children }: TProps<any>) => {
             }}
           >
             Subjects
+          </Menu.Item>
+          <Menu.Item
+            key="u1"
+            icon={<TeamOutlined />}
+            onClick={() => {
+              router.push('/admin/teachers');
+            }}
+          >
+            Teachers
+          </Menu.Item>
+
+          <Menu.Item
+            key="h1"
+            icon={<TeamOutlined />}
+            onClick={() => {
+              router.push('/admin/students');
+            }}
+          >
+            Students
+          </Menu.Item>
+          <Menu.Item
+            key="c1"
+            icon={<TeamOutlined />}
+            onClick={() => {
+              router.push('/admin/parents');
+            }}
+          >
+            Parents
           </Menu.Item>
 
           <Menu.Item
